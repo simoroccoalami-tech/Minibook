@@ -118,13 +118,13 @@ if not st.session_state.logged_in:
                     conn.commit()
                     st.success("تم إنشاء الحساب بنجاح! يمكنك الانتقال لتبويب تسجيل الدخول.")
                 except sqlite3.IntegrityError:
-                    st.error("اسم المستخدم هذا مستخدم مسبقاً، اختر اسمآ آخر.")
+                    st.error("اسم المستخدم هذا مستخدم مسبقاً، اختر اسماً آخر.")
             else:
                 st.warning("الرجاء ملء جميع الحقول.")
 
 else:
     # --- التطبيق الرئيسي بعد تسجيل الدخول ---
-    st.sidebar.success(مرحباً بك، {st.session_state.username})
+    st.sidebar.success(f"مرحباً بك، {st.session_state.username}")
     if st.sidebar.button("تسجيل الخروج"):
         st.session_state.logged_in = False
         st.session_state.username = ""
