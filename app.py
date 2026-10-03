@@ -8,7 +8,7 @@ st.set_page_config(
     page_title="Minibook - شبيه فيسبوك", page_icon="📱", layout="centered"
 )
 
-# --- تنسيق CSS حديث ---
+# --- تنسيق CSS مخصص ومحدّث لإظهار صناديق الإدخال بوضوح تفعيل كامل ---
 st.markdown(
     """
     <style>
@@ -35,12 +35,20 @@ st.markdown(
         margin-bottom: 12px;
         border: 1px solid #ced0d4;
     }
+    /* إجبار صناديق الإدخال على الظهور بخلفية بيضاء وحدود واضحة تماماً */
+    input {
+        background-color: #ffffff !important;
+        border: 2px solid #1877f2 !important;
+        border-radius: 6px !important;
+        color: #000000 !important;
+        padding: 10px !important;
+    }
     .stButton>button {
         background-color: #1877f2;
         color: white;
         border-radius: 6px;
         border: none;
-        padding: 6px 16px;
+        padding: 8px 16px;
         font-weight: bold;
         width: 100%;
     }
