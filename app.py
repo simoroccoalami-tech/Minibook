@@ -8,14 +8,13 @@ st.set_page_config(
     page_title="Minibook - شبيه فيسبوك", page_icon="📱", layout="centered"
 )
 
-# --- تنسيق CSS حديث ومستوحى من تصميم فيسبوك ---
+# --- تنسيق CSS حديث ---
 st.markdown(
     """
     <style>
     .stApp {
         background-color: #f0f2f5;
     }
-    /* اسم التطبيق ملون بالأحمر والأخضر */
     .title-red {
         color: #e4405f;
         font-family: Helvetica, Arial, sans-serif;
@@ -28,7 +27,6 @@ st.markdown(
         font-weight: 900;
         font-size: 2.5rem;
     }
-    /* بطاقة المنشورات على شكل بطاقات فيسبوك البيضاء */
     .fb-card {
         background-color: #ffffff;
         padding: 16px;
@@ -37,7 +35,6 @@ st.markdown(
         margin-bottom: 12px;
         border: 1px solid #ced0d4;
     }
-    /* تنسيق زر النشر والإعجاب */
     .stButton>button {
         background-color: #1877f2;
         color: white;
@@ -56,17 +53,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# مجلد تخزين الصور
 UPLOAD_DIR = "uploads"
 if not os.path.exists(UPLOAD_DIR):
   os.makedirs(UPLOAD_DIR)
 
 
-# --- تهيئة قاعدة البيانات الخالية من الأخطاء ---
 def init_db():
   conn = sqlite3.connect("minibook_perfect.db", check_same_thread=False)
   cursor = conn.cursor()
-
   cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
@@ -74,7 +68,6 @@ def init_db():
             profile_pic TEXT
         )
     """)
-
   cursor.execute("""
         CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -84,7 +77,6 @@ def init_db():
             likes INTEGER DEFAULT 0
         )
     """)
-
   cursor.execute("""
         CREATE TABLE IF NOT EXISTS comments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -108,7 +100,6 @@ def check_hashes(password, hashed_text):
   return make_hashes(password) == hashed_text
 
 
-# إدارة جلسة المستخدم
 if "logged_in" not in st.session_state:
   st.session_state["logged_in"] = False
   st.session_state["username"] = ""
@@ -121,12 +112,22 @@ if not st.session_state["logged_in"]:
       "اختر العملية", ["تسجيل الدخول", "حساب جديد"]
   )
 
-  if auth_mode == "تسجيل الدخول":
-    st.subheader("🔑 تسجيل الدخول إلى Minibook")
-    username_input = st.text_input("اسم المستخدم")
-    password_input = st.text_input("كلمة المرور", type="password")
+  # عنوان التطبيق في الصفحة الرئيسية
+  st.markdown(
+      "<div style='text-align: center; margin-bottom: 20px;'><span"
+      " class='title-red'>Mini</span><span"
+      " class='title-green'>book</span></div>",
+      unsafe_allow_html=True,
+  )
 
-    if st.button("دخول النظام"):
+  if auth_mode == "تسجيل الدخول":
+    st.subheader("🔑 تسجيل الدخول")
+    username_input = st.text_input("اسم المستخدم", key="login_user")
+    password_input = st.text_input(
+        "كلمة المرور", type="password", key="login_pass"
+    )
+
+    if st.button("دخول النظام", key="login_btn"):
       if username_input and password_input:
         conn = sqlite3.connect("minibook_perfect.db", check_same_thread=False)
         cursor = conn.cursor()
@@ -147,14 +148,14 @@ if not st.session_state["logged_in"]:
         st.warning("الرجاء إدخال بيانات الدخول.")
 
   elif auth_mode == "حساب جديد":
-    st.subheader("📝 إنشاء حساب جديد (مثل فيسبوك)")
-    new_user = st.text_input("اسم المستخدم الجديد")
-    new_pass = st.text_input("كلمة المرور", type="password")
+    st.subheader("📝 إنشاء حساب جديد")
+    new_user = st.text_input("اسم المستخدم الجديد", key="reg_user")
+    new_pass = st.text_input("كلمة المرور", type="password", key="reg_pass")
     uploaded_profile_pic = st.file_uploader(
         "اختر صورة الملف الشخصي (Profile)", type=["jpg", "png", "jpeg"]
     )
 
-    if st.button("إنشاء الحساب"):
+    if st.button("إنشاء الحساب", key="reg_btn"):
       if new_user and new_pass:
         pic_path = None
         if uploaded_profile_pic is not None:
@@ -174,16 +175,14 @@ if not st.session_state["logged_in"]:
           )
           conn.commit()
           conn.close()
-          st.success(
-              "تم إنشاء الحساب بنجاح! يمكنك الانتقال لتبويب تسجيل الدخول."
-          )
+          st.success("تم إنشاء الحساب بنجاح! انتقل لتبويب تسجيل الدخول.")
         except Exception:
           st.error("اسم المستخدم مستخدم مسبقاً، اختر اسماً فريداً.")
       else:
         st.warning("الرجاء ملء الحقول الإجبارية.")
 
 else:
-  # معلومات المستخدم الحالي في القائمة الجانبية
+  # القائمة الجانبية للمستخدم المسجل
   conn = sqlite3.connect("minibook_perfect.db", check_same_thread=False)
   cursor = conn.cursor()
   cursor.execute(
@@ -210,7 +209,6 @@ else:
       unsafe_allow_html=True,
   )
 
-  # صندوق كتابة منشور جديد (يشبه واجهة فيسبوك: "ماذا يدور في ذهنك؟")
   st.markdown(
       "<div class='fb-card'><h4>✍️ إنشاء منشور جديد</h4>", unsafe_allow_html=True
   )
@@ -246,7 +244,6 @@ else:
   st.markdown("---")
   st.subheader("📰 آخر الأخبار والمنشورات")
 
-  # استرجاع وعرض المنشورات من قاعدة البيانات بترتيب تنازلي
   conn = sqlite3.connect("minibook_perfect.db", check_same_thread=False)
   cursor = conn.cursor()
   cursor.execute(
@@ -258,7 +255,6 @@ else:
   for post in all_posts:
     p_id, p_owner, p_content, p_img, p_likes = post
 
-    # جلب صورة البروفايل الخاصة بصاحب المنشور لتظهر بجانب اسمه بدقة
     cursor.execute(
         "SELECT profile_pic FROM users WHERE username = ?", (p_owner,)
     )
@@ -266,7 +262,6 @@ else:
 
     st.markdown("<div class='fb-card'>", unsafe_allow_html=True)
 
-    # رأس المنشور (صورة البروفايل + اسم المستخدم)
     col_avatar, col_name = st.columns([1, 10])
     with col_avatar:
       if owner_pic and owner_pic[0] and os.path.exists(owner_pic[0]):
@@ -279,17 +274,14 @@ else:
           unsafe_allow_html=True,
       )
 
-    # نص المنشور
     if p_content:
       st.write(p_content)
 
-    # صورة المنشور المرفقة إن وجدت
     if p_img and os.path.exists(p_img):
       st.image(p_img, use_column_width=True)
 
     st.write("---")
 
-    # تفاعل الإعجاب (Like)
     col_like, col_space = st.columns([2, 8])
     with col_like:
       if st.button(f"❤️ أعجبني ({p_likes})", key=f"like_btn_{p_id}"):
@@ -299,7 +291,6 @@ else:
         conn.commit()
         st.rerun()
 
-    # قسم التعليقات تماماً مثل فيسبوك
     with st.expander("💬 عرض التعليقات وإضافتها"):
       cursor.execute(
           "SELECT username, comment FROM comments WHERE post_id = ?", (p_id,)
@@ -313,7 +304,6 @@ else:
             unsafe_allow_html=True,
         )
 
-      # إضافة تعليق جديد
       with st.form(key=f"comment_form_{p_id}", clear_on_submit=True):
         comment_input = st.text_input(
             "اكتب تعليقاً...", key=f"c_input_val_{p_id}"
