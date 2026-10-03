@@ -12,33 +12,26 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* خلفية عامة وتنسيق الخطوط */
     .stApp {
         background-color: #f9f9f9;
     }
-    
-    /* عنوان التطبيق الرئيسي */
     h1 {
         color: #d9534f;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         text-align: center;
         font-weight: 800;
     }
-    
-    /* تنسيق بطاقات المنشورات لتشبه فيسبوك ولكن بهويتك الحمراء والخضراء */
     .post-card {
         background-color: white;
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.08);
         margin-bottom: 20px;
-        border-left: 5px solid #5cb85c; /* لمسة خضراء مميزة */
+        border-left: 5px solid #5cb85c;
         border-right: 1px solid #eee;
         border-top: 1px solid #eee;
         border-bottom: 1px solid #eee;
     }
-    
-    /* الأزرار بتنسيق متناسق */
     .stButton>button {
         background-color: #5cb85c;
         color: white;
@@ -51,15 +44,10 @@ st.markdown(
         background-color: #4cae4c;
         color: white;
     }
-    
-    /* زر الإعجاب أو الثانوي باللون الأحمر */
-    div.row-widget.stButton > button:active {
-        background-color: #d9534f;
-    }
     </style>
-""",
+    """,
     unsafe_allow_html=True,
->
+)
 
 # مجلد حفظ الصور المرفوعة
 UPLOAD_DIR = "uploads"
@@ -72,7 +60,6 @@ def init_db():
   conn = sqlite3.connect("minibook.db", check_same_thread=False)
   cursor = conn.cursor()
 
-  # جدول المستخدمين
   cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
@@ -80,7 +67,6 @@ def init_db():
         )
     """)
 
-  # جدول المنشورات (تمت إضافة عمود لصورة المنشور image_path)
   cursor.execute("""
         CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,7 +77,6 @@ def init_db():
         )
     """)
 
-  # جدول التعليقات
   cursor.execute("""
         CREATE TABLE IF NOT EXISTS comments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -171,7 +156,6 @@ if not st.session_state["logged_in"]:
         st.warning("الرجاء ملء جميع الحقول.")
 
 else:
-  # --- الواجهة الرئيسية بعد تسجيل الدخول (شبه فيسبوك باللونين الأحمر والأخضر) ---
   st.sidebar.write(f"👤 أهلاً بك: **{st.session_state['username']}**")
   if st.sidebar.button("تسجيل الخروج"):
     st.session_state["logged_in"] = False
@@ -179,9 +163,8 @@ else:
     st.rerun()
 
   st.markdown("<h1>Minibook 🔴🟢</h1>", unsafe_allow_html=True)
-  st.write(
-      "---"
-  )  # --- صندوق كتابة منشور جديد (يشبه إطارات منصات التواصل) ---
+  st.write("---")
+
   st.markdown("### ✍️ ماذا يدور في ذهنك اليوم؟")
   with st.form("post_form", clear_on_submit=True):
     post_content = st.text_area("اكتب منشورك هنا...")
@@ -212,7 +195,6 @@ else:
   st.write("---")
   st.subheader("📰 آخر المنشورات")
 
-  # جلب المنشورات من قاعدة البيانات
   conn = sqlite3.connect("minibook.db", check_same_thread=False)
   cursor = conn.cursor()
   cursor.execute(
@@ -224,7 +206,6 @@ else:
   for post in posts:
     post_id, p_user, p_content, p_image, p_likes = post
 
-    # عرض المنشور داخل بطاقة أنيقة
     st.markdown(
         f"""
         <div class="post-card">
@@ -235,21 +216,18 @@ else:
         unsafe_allow_html=True,
     )
 
-    # عرض الصورة إذا وجدت مرفقة بالمنشور
     if p_image and os.path.exists(p_image):
       st.image(p_image, use_column_width=True)
 
-    # أزرار التفاعل (إعجاب وتعليقات)
     col1, col2 = st.columns([1, 4])
     with col1:
-      if st.button(f"❤️ أعجبني ({p_likes})", key=f"like_{post_id}"):
+      if st.button(f"❤️️ أعجبني ({p_likes})", key=f"like_{post_id}"):
         cursor.execute(
             "UPDATE posts SET likes = likes + 1 WHERE id = ?", (post_id,)
         )
         conn.commit()
         st.rerun()
 
-    # عرض قسم التعليقات لكل منشور
     with st.expander("💬 عرض / إضافة تعليقات"):
       cursor.execute(
           "SELECT username, comment FROM comments WHERE post_id = ?", (post_id,)
