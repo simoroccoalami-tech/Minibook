@@ -8,94 +8,6 @@ st.set_page_config(
     page_title="Minibook - شبيه فيسبوك", page_icon="📱", layout="centered"
 )
 
-# --- تنسيق CSS مخصص لاستهداف الحقول والشاشات على الهواتف بدقة ---
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-color: #f0f2f5;
-    }
-    .title-red {
-        color: #e4405f;
-        font-family: Helvetica, Arial, sans-serif;
-        font-weight: 900;
-        font-size: 2.5rem;
-    }
-    .title-green {
-        color: #00a400;
-        font-family: Helvetica, Arial, sans-serif;
-        font-weight: 900;
-        font-size: 2.5rem;
-    }
-    .fb-card {
-        background-color: #ffffff;
-        padding: 16px;
-        border-radius: 8px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        margin-bottom: 12px;
-        border: 1px solid #ced0d4;
-    }
-    .stTextInput input, .stTextArea textarea {
-        background-color: #ffffff !important;
-        border: 2px solid #1877f2 !important;
-        border-radius: 8px !important;
-        color: #000000 !important;
-        padding: 10px !important;
-    }
-    .stButton>button {
-        background-color: #1877f2;
-        color: white;
-        border-radius: 6px;
-        border: none;
-        padding: 8px 16px;
-        font-weight: bold;
-        width: 100%;
-    }
-    .stButton>button:hover {
-        background-color: #166fe5;
-        color: white;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-UPLOAD_DIR = "uploads"
-if not os.path.exists(UPLOAD_DIR):
-  os.makedirs(UPLOAD_DIR)
-
-
-# --- تهيئة قاعدة البيانات والجداول ---
-def init_db():
-  conn = sqlite3.connect("minibook_perfect.db", check_same_thread=False)
-  cursor = conn.cursor()
-  cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            username TEXT PRIMARY KEY,
-            password TEXT,
-            profile_pic TEXT
-        )
-    """)
-  cursor.execute("""
-        CREATE TABLE IF NOT EXISTS posts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            content TEXT,
-            image_path TEXT,
-            likes INTEGER DEFAULT 0
-        )إليك الكود النهائي الكامل والجاهز لتطبيق **Minibook** مصححاً بالكامل، ومتضمناً لجميع الميزات السابقة (تسجيل الدخول، إنشاء الحسابات، صور البروفايل، المنشورات مع رفع الصور، الإعجابات، التعليقات) بالإضافة إلى **خاصية حذف المنشورات لصاحب المنشور فقط**، مع واجهة منسقة بأسلوب فيسبوك (أحمر وأخضر) ومجهزة للهواتف المحمولة:
-
-```python
-import hashlib
-import os
-import sqlite3
-import streamlit as st
-
-# إعداد صفحة التطبيق
-st.set_page_config(
-    page_title="Minibook - شبيه فيسبوك", page_icon="📱", layout="centered"
-)
-
 # --- تنسيق CSS مخصص لاستهداف الحقول والواجهة على الهواتف ---
 st.markdown(
     """
@@ -296,7 +208,6 @@ else:
     st.sidebar.image(user_pic, width=80)
 
   st.sidebar.markdown("---")
-  st.sidebar.info("تطبيقك يعمل بشكل ممتاز وجاهز للتطوير والتوسع.")
 
   # الصفحة الرئيسية لعرض المنشورات وكتابتها
   st.markdown("### 📰 آخر المنشورات")
